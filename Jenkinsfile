@@ -35,5 +35,17 @@ pipeline {
                 }
             }
         }
+        stage('Terraform Destory') {
+            steps {
+                withCredentials([
+                    string(credentialsId: 'aws-access-key-id', variable: 'AWS_ACCESS_KEY_ID'),
+                    string(credentialsId: 'aws-secret-key-id', variable: 'AWS_SECRET_ACCESS_KEY')
+                ]) {
+                    bat '''
+                    terraform plan -var "aws_access_key=%AWS_ACCESS_KEY_ID%" -var "aws_secret_key=%AWS_SECRET_ACCESS_KEY%"
+                    '''
+                }
+            }
+        }
     }
 }

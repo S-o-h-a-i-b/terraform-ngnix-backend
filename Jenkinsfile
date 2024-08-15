@@ -2,7 +2,6 @@ pipeline {
     agent {
         docker {
             image 'hashicorp/terraform:1.9.3'
-            label 'docker-agent'
             args '-v /var/run/docker.sock:/var/run/docker.sock'
         }
     }

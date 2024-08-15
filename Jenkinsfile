@@ -1,5 +1,12 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'hashicorp/terraform:1.9.3'
+            label 'docker-agent'
+            args '-v /var/run/docker.sock:/var/run/docker.sock'
+        }
+    }
+    
     stages {
         stage('Terraform Init') {
             steps {
@@ -18,7 +25,7 @@ pipeline {
                     string(credentialsId: 'aws-secret-key-id', variable: 'AWS_SECRET_ACCESS_KEY')
                 ]) {
                     bat '''
-                    terraform plan -var "aws_access_key=%AWS_ACCESS_KEY_ID%" -var "aws_secret_key=%AWS_SECRET_ACCESS_KEY%"
+                    terraform plan -var "aws_access_key=$AWS_ACCESS_KEY_ID" -var "aws_secret_key=$AWS_SECRET_ACCESS_KEY"
                     '''
                 }
             }
@@ -30,7 +37,7 @@ pipeline {
                     string(credentialsId: 'aws-secret-key-id', variable: 'AWS_SECRET_ACCESS_KEY')
                 ]) {
                     bat '''
-                    terraform apply -var "aws_access_key=%AWS_ACCESS_KEY_ID%" -var "aws_secret_key=%AWS_SECRET_ACCESS_KEY%" -auto-approve
+                    terraform apply -var "aws_access_key=$AWS_ACCESS_KEY_ID" -var "aws_secret_key=$AWS_SECRET_ACCESS_KEY" -auto-approve
                     '''
                 }
             }
@@ -42,7 +49,7 @@ pipeline {
                     string(credentialsId: 'aws-secret-key-id', variable: 'AWS_SECRET_ACCESS_KEY')
                 ]) {
                     bat '''
-                    terraform plan -var "aws_access_key=%AWS_ACCESS_KEY_ID%" -var "aws_secret_key=%AWS_SECRET_ACCESS_KEY%"
+                    terraform destroy -var "aws_access_key=$AWS_ACCESS_KEY_ID" -var "aws_secret_key=$AWS_SECRET_ACCESS_KEY" -auto-approve
                     '''
                 }
             }
